@@ -1,0 +1,23 @@
+header{
+    position: fixed;
+    width: 100%;
+    background: #41ffff;
+}
+
+footer{
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background: #007c7c;
+}
+
+.frame{
+  margin: 0 10px 0 0;
+  display: inline-block;
+  padding: 8px;
+  border-radius: 12px;
+  background: #30c3e8;
+  font-size: 20px;
+}
+

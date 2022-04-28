@@ -1,0 +1,128 @@
+<html>
+
+<head>
+    <title>チャット</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+
+<body>
+    <header>
+        テストチャット Name→
+        <input type="text" id="userName" value="" placeholder="10字以内" maxlength="10" onchange="setUser()" />
+    </header>
+    <br>
+    <hr>
+    <div>
+        <p id="sendChat"></p>
+
+    </div>
+
+    <hr>
+
+    <footer>
+        <input type="text" id="chatData" value="" />
+        <input type="button" value="送信" onclick="saveChat()" />
+    </footer>
+
+</body>
+
+<script>
+    const { createClient } = supabase
+    const _supabase = createClient('domain', 'password')
+
+    console.log('Supabase Instance: ', _supabase)
+    // ...
+
+    setInterval("setData()", 1000);
+
+    async function saveChat() {
+        let chatData = document.getElementById('chatData');
+        let name = document.getElementById('userName');
+
+        if (name.value == null)
+            name.value = '名無し';
+
+
+        const { data, error } = await _supabase
+            .from("chatTable")
+            .select("id")
+
+        let count = data.slice(-1)[0].id;
+
+        console.log(data.slice(-1)[0].id);
+
+        let t = new Date();
+        let tt;
+
+        let month = t.getMonth() + 1;
+        let day = t.getDate();
+        let hour = t.getHours();
+        let minute = t.getMinutes();
+        tt = month + '/' + day + ' ' + hour + ':' + minute;
+
+
+        const { Data, Error } = await _supabase
+            .from("chatTable")
+            .insert([{ user: name.value, contents: chatData.value, date: tt }])
+
+        count++;
+
+        if (chatData.value != "")
+            sendChat.innerHTML += `<div>${name.value}<br><p class="frame">${chatData.value}</p><br>${tt}</div><br>`;
+
+        chatData.value = '';
+    }
+
+    document.addEventListener('DOMContentLoaded', async (event) => {
+        let chatData = document.getElementById('chatData');
+        let name = document.getElementById('userName');
+
+        console.log(localStorage.getItem('chatdata'));
+
+        chatData.value = localStorage.getItem('chatdata');
+        name.value = localStorage.getItem('chatname');
+
+        let outputMemo = document.getElementById('outputMemo');
+
+        const { data, error } = await _supabase
+            .from("chatTable")
+            .select("id")
+
+        console.log(data.slice(-1)[0].id);
+
+        let count = 1;
+
+        while (count <= data.slice(-1)[0].id) {
+            const { data, error } = await _supabase
+                .from("chatTable")
+                .select()
+                .eq("id", count)
+
+            if (data != '') {
+                console.log(data)
+                if (data[0].contents != "")
+                    sendChat.innerHTML += `<div>${data[0].user}<br><p class="frame">${data[0].contents}</p><br>${data[0].date}</div><br>`;
+            }
+            count++;
+        }
+        console.log(count);
+    });
+
+    function setData() {
+        let chatData = document.getElementById('chatData');
+
+        localStorage.setItem('chatdata', chatData.value);
+        console.log(localStorage)
+    }
+
+    function setUser() {
+        let name = document.getElementById('userName');
+
+        localStorage.setItem('chatname', name.value);
+        console.log(localStorage)
+    }
+
+</script>
+
+</html>
